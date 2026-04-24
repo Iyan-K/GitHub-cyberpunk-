@@ -21,7 +21,7 @@ export class GithubService {
   private getHeaders(): HttpHeaders {
     const cfg = this.config();
     if (cfg?.token) {
-      return new HttpHeaders({ 'Authorization': `token ${cfg.token}` });
+      return new HttpHeaders({ 'Authorization': `Bearer ${cfg.token}` });
     }
     return new HttpHeaders();
   }

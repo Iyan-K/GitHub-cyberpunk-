@@ -108,8 +108,12 @@ export class DashboardComponent implements OnInit, OnDestroy {
     this.subs.push(prSub, buildSub);
   }
 
+  private lastFailureState = false;
+
   private checkForFailures(runs: WorkflowRun[]) {
     const hasFailure = runs.some(r => r.conclusion === 'failure');
+    if (hasFailure === this.lastFailureState) return;
+    this.lastFailureState = hasFailure;
     if (hasFailure) {
       this.alertService.triggerCriticalAlert();
     } else {
