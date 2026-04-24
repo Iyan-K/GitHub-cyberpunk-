@@ -1,0 +1,32 @@
+<div class="pr-card" [class]="'status-' + getStatusClass()">
+  <div class="pr-header">
+    <span class="pr-number">#{{ pr.number }}</span>
+    <span class="pr-status" [class]="'badge-' + getStatusClass()">{{ getStatusLabel() }}</span>
+  </div>
+  <div class="pr-title">{{ pr.title }}</div>
+  <div class="pr-meta">
+    <div class="pr-author">
+      <img [src]="pr.user.avatar_url" [alt]="pr.user.login" class="avatar" />
+      <span class="author-name">{{ pr.user.login }}</span>
+    </div>
+    <div class="pr-branch">
+      <span class="branch-icon">⌥</span>
+      <span class="branch-name">{{ pr.head.ref }}</span>
+      <span class="arrow">→</span>
+      <span class="branch-name">{{ pr.base.ref }}</span>
+    </div>
+  </div>
+  <div class="pr-footer">
+    <span class="time-ago">{{ getTimeAgo(pr.updated_at) }}</span>
+    <div class="pr-labels">
+      @for (label of pr.labels.slice(0, 3); track label.name) {
+        <span class="label-chip" [style.border-color]="'#' + label.color" [style.color]="'#' + label.color">
+          {{ label.name }}
+        </span>
+      }
+    </div>
+    @if (pr.requested_reviewers.length > 0) {
+      <span class="reviewer-count">👥 {{ pr.requested_reviewers.length }}</span>
+    }
+  </div>
+</div>

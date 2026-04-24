@@ -1,0 +1,16 @@
+<div class="build-card" [class]="'status-' + getStatusClass()">
+  <div class="build-status-icon" [class]="'icon-' + getStatusClass()">
+    {{ getStatusIcon() }}
+  </div>
+  <div class="build-info">
+    <div class="build-name">{{ run.name }}</div>
+    <div class="build-commit">{{ run.head_commit.message | slice:0:60 }}{{ run.head_commit.message.length > 60 ? '...' : '' }}</div>
+    <div class="build-meta">
+      <span class="build-author">{{ run.head_commit.author.name }}</span>
+      <span class="build-time">{{ getTimeAgo(run.updated_at) }}</span>
+    </div>
+  </div>
+  <div class="build-conclusion" [class]="'label-' + getStatusClass()">
+    {{ (run.conclusion || run.status) | uppercase }}
+  </div>
+</div>
