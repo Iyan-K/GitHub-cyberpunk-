@@ -1,7 +1,7 @@
 # NEON_PR_DASH — Cyberpunk PR Dashboard
 
 A real-time pull-request and CI dashboard for GitHub, dressed in retrowave / cyberpunk
-neon. Built with **Angular 18** standalone components and a 2D canvas-rendered
+neon. Built with **Angular 20** standalone components and a 2D canvas-rendered
 retrowave background — pinks, cyans, scanlines, glowing text, the works.
 
 > Looks like a productivity dashboard from your manager's POV. Looks like an 80s
