@@ -1,0 +1,265 @@
+@use '../../../styles/cyberpunk' as cp;
+
+:host {
+  display: block;
+}
+
+.pr-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  padding: 1rem 1.1rem 0.9rem;
+  background: linear-gradient(160deg, rgba(20, 0, 40, 0.85), rgba(0, 10, 30, 0.85));
+  border: 1px solid cp.$neon-cyan;
+  border-radius: 6px;
+  box-shadow:
+    0 0 0 1px rgba(0, 240, 255, 0.15),
+    0 0 18px rgba(255, 60, 200, 0.18),
+    inset 0 0 30px rgba(0, 0, 0, 0.5);
+  color: cp.$text-primary;
+  font-family: cp.$font-mono;
+  overflow: hidden;
+  transition: transform 120ms ease, box-shadow 120ms ease;
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(
+      0deg,
+      rgba(255, 255, 255, 0.025) 0,
+      rgba(255, 255, 255, 0.025) 1px,
+      transparent 1px,
+      transparent 3px
+    );
+    pointer-events: none;
+    mix-blend-mode: overlay;
+  }
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow:
+      0 0 0 1px cp.$neon-cyan,
+      0 0 24px rgba(0, 240, 255, 0.35),
+      0 0 24px rgba(255, 60, 200, 0.3);
+  }
+
+  &[data-build='success'] {
+    border-color: cp.$neon-green;
+    box-shadow:
+      0 0 0 1px rgba(76, 255, 165, 0.3),
+      0 0 18px rgba(76, 255, 165, 0.25);
+  }
+  &[data-build='failure'] {
+    border-color: cp.$neon-red;
+    animation: failure-pulse 1.6s ease-in-out infinite;
+  }
+  &[data-build='pending'] {
+    border-color: cp.$neon-yellow;
+  }
+
+  &.draft {
+    opacity: 0.78;
+    border-style: dashed;
+  }
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: cp.$neon-cyan;
+  text-shadow: 0 0 6px rgba(0, 240, 255, 0.6);
+}
+
+.repo-tag {
+  font-weight: 700;
+}
+
+.pr-number {
+  color: cp.$neon-pink;
+  text-shadow: 0 0 6px rgba(255, 60, 200, 0.7);
+}
+
+.title {
+  font-family: cp.$font-display;
+  font-size: 1.05rem;
+  line-height: 1.3;
+  color: #fff;
+  text-decoration: none;
+  text-shadow:
+    0 0 6px rgba(255, 60, 200, 0.55),
+    0 0 12px rgba(0, 240, 255, 0.35);
+
+  &:hover {
+    color: cp.$neon-pink;
+    text-decoration: underline;
+  }
+}
+
+.meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  align-items: center;
+  font-size: 0.78rem;
+  color: cp.$text-secondary;
+}
+
+.branch {
+  display: inline-flex;
+  gap: 0.3rem;
+  align-items: center;
+
+  .head {
+    color: cp.$neon-pink;
+  }
+  .arrow {
+    opacity: 0.5;
+  }
+  .base {
+    color: cp.$neon-cyan;
+  }
+}
+
+.author {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.avatar {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  border: 1px solid cp.$neon-pink;
+  box-shadow: 0 0 4px rgba(255, 60, 200, 0.6);
+}
+
+.dot {
+  opacity: 0.5;
+}
+
+.stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.55rem;
+  font-size: 0.72rem;
+  color: cp.$text-secondary;
+
+  .stat {
+    padding: 0.1rem 0.4rem;
+    border: 1px solid rgba(0, 240, 255, 0.4);
+    border-radius: 3px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  .plus {
+    color: cp.$neon-green;
+    border-color: rgba(76, 255, 165, 0.5);
+  }
+  .minus {
+    color: cp.$neon-red;
+    border-color: rgba(255, 70, 100, 0.5);
+  }
+  .draft-tag {
+    color: cp.$neon-yellow;
+    border-color: rgba(255, 220, 90, 0.6);
+  }
+}
+
+.checks {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.build-state {
+  font-family: cp.$font-display;
+  letter-spacing: 0.18em;
+  font-size: 0.78rem;
+  align-self: flex-start;
+  padding: 0.18rem 0.5rem;
+  border: 1px solid currentColor;
+  border-radius: 3px;
+
+  .pr-card[data-build='success'] & {
+    color: cp.$neon-green;
+    text-shadow: 0 0 6px rgba(76, 255, 165, 0.6);
+  }
+  .pr-card[data-build='failure'] & {
+    color: cp.$neon-red;
+    text-shadow: 0 0 6px rgba(255, 70, 100, 0.7);
+  }
+  .pr-card[data-build='pending'] & {
+    color: cp.$neon-yellow;
+    text-shadow: 0 0 6px rgba(255, 220, 90, 0.6);
+  }
+  .pr-card[data-build='unknown'] & {
+    color: cp.$text-secondary;
+  }
+}
+
+.check-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+
+  .check {
+    font-size: 0.68rem;
+    padding: 0.1rem 0.35rem;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 3px;
+    background: rgba(0, 0, 0, 0.35);
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    &[data-conclusion='success'] {
+      color: cp.$neon-green;
+      border-color: rgba(76, 255, 165, 0.6);
+    }
+    &[data-conclusion='failure'],
+    &[data-conclusion='timed_out'],
+    &[data-conclusion='startup_failure'],
+    &[data-conclusion='action_required'] {
+      color: cp.$neon-red;
+      border-color: rgba(255, 70, 100, 0.7);
+    }
+    &[data-status='in_progress'],
+    &[data-status='queued'],
+    &[data-status='pending'],
+    &[data-status='waiting'] {
+      color: cp.$neon-yellow;
+      border-color: rgba(255, 220, 90, 0.6);
+    }
+    &[data-conclusion='cancelled'],
+    &[data-conclusion='skipped'],
+    &[data-conclusion='neutral'] {
+      color: cp.$text-secondary;
+    }
+  }
+}
+
+@keyframes failure-pulse {
+  0%,
+  100% {
+    box-shadow:
+      0 0 0 1px cp.$neon-red,
+      0 0 12px rgba(255, 70, 100, 0.45);
+  }
+  50% {
+    box-shadow:
+      0 0 0 1px cp.$neon-red,
+      0 0 28px rgba(255, 70, 100, 0.85);
+  }
+}

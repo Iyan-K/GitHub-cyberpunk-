@@ -1,0 +1,46 @@
+<article class="pr-card" [attr.data-build]="pr.buildState" [class.draft]="pr.draft">
+  <header class="card-header">
+    <span class="repo-tag">{{ pr.repo.owner }}/{{ pr.repo.repo }}</span>
+    <span class="pr-number">#{{ pr.number }}</span>
+  </header>
+
+  <a class="title" [href]="pr.htmlUrl" target="_blank" rel="noopener">{{ pr.title }}</a>
+
+  <div class="meta">
+    <span class="branch" title="head → base">
+      <span class="head">{{ pr.headRef }}</span>
+      <span class="arrow">→</span>
+      <span class="base">{{ pr.baseRef }}</span>
+    </span>
+    <span class="dot">•</span>
+    <span class="author">
+      <img *ngIf="pr.authorAvatar" [src]="pr.authorAvatar" [alt]="pr.authorLogin" class="avatar" />
+      <span>&#64;{{ pr.authorLogin }}</span>
+    </span>
+    <span class="dot">•</span>
+    <span class="age">{{ age() }}</span>
+  </div>
+
+  <div class="stats">
+    <span *ngIf="pr.additions !== null" class="stat plus">+{{ pr.additions }}</span>
+    <span *ngIf="pr.deletions !== null" class="stat minus">-{{ pr.deletions }}</span>
+    <span *ngIf="pr.changedFiles !== null" class="stat">{{ pr.changedFiles }} files</span>
+    <span class="stat">💬 {{ pr.comments + pr.reviewComments }}</span>
+    <span *ngIf="pr.draft" class="stat draft-tag">DRAFT</span>
+  </div>
+
+  <footer class="checks">
+    <span class="build-state">{{ buildLabel() }}</span>
+    <ul *ngIf="pr.checks.length > 0" class="check-list">
+      <li
+        *ngFor="let check of pr.checks; trackBy: trackCheck"
+        class="check"
+        [attr.data-status]="check.status"
+        [attr.data-conclusion]="check.conclusion"
+        [title]="check.name + ': ' + (check.conclusion || check.status || 'unknown')"
+      >
+        <a [href]="check.htmlUrl" target="_blank" rel="noopener">{{ check.name }}</a>
+      </li>
+    </ul>
+  </footer>
+</article>

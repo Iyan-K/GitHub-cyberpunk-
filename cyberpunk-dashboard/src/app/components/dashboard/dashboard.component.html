@@ -1,0 +1,82 @@
+<section class="dashboard" [class.critical]="criticalAlert()">
+  <app-critical-alert [active]="criticalAlert()" [failureCount]="failingPrs().length"></app-critical-alert>
+  <header class="topbar">
+    <div class="brand">
+      <span class="logo">⌬</span>
+      <h1 class="title">NEON_<span class="hl">PR</span>_DASH</h1>
+      <span class="version">v1.0 // online</span>
+    </div>
+
+    <div class="stats">
+      <div class="stat total">
+        <span class="num">{{ summary().total }}</span>
+        <span class="lbl">PRs</span>
+      </div>
+      <div class="stat passing">
+        <span class="num">{{ summary().passing }}</span>
+        <span class="lbl">PASS</span>
+      </div>
+      <div class="stat pending">
+        <span class="num">{{ summary().pending }}</span>
+        <span class="lbl">RUN</span>
+      </div>
+      <div class="stat failing" [class.alert]="summary().failing > 0">
+        <span class="num">{{ summary().failing }}</span>
+        <span class="lbl">FAIL</span>
+      </div>
+    </div>
+
+    <div class="controls">
+      <div class="group">
+        <span class="group-label">FILTER</span>
+        <button class="chip" [class.active]="filterMode() === 'all'" (click)="setFilter('all')">ALL</button>
+        <button class="chip" [class.active]="filterMode() === 'failing'" (click)="setFilter('failing')">FAILING</button>
+      </div>
+      <div class="group">
+        <span class="group-label">SORT</span>
+        <button class="chip" [class.active]="sortMode() === 'updated'" (click)="setSort('updated')">RECENT</button>
+        <button class="chip" [class.active]="sortMode() === 'failures'" (click)="setSort('failures')">FAILS 1ST</button>
+        <button class="chip" [class.active]="sortMode() === 'oldest'" (click)="setSort('oldest')">OLDEST</button>
+      </div>
+      <div class="group end">
+        <button class="chip" (click)="toggleMute()" [title]="alarm.muted() ? 'Alarm muted' : 'Alarm armed'">
+          {{ alarm.muted() ? '🔇 MUTED' : '🔊 ALARM' }}
+        </button>
+        <button class="chip" (click)="refreshNow()" [disabled]="loading()">
+          {{ loading() ? 'SYNCING…' : '↻ SYNC' }}
+        </button>
+        <button class="chip ghost" (click)="openSettings.emit()">⚙ CONFIG</button>
+      </div>
+    </div>
+
+    <div class="meta-row">
+      <span class="repos">
+        <span *ngFor="let r of settings().repos; let last = last">
+          {{ r.owner }}/{{ r.repo }}<span *ngIf="!last"> · </span>
+        </span>
+      </span>
+      <span class="last-sync" *ngIf="lastUpdated() as ts">SYNC :: {{ ts | date: 'HH:mm:ss' }}</span>
+    </div>
+
+    <p *ngIf="errorMessage()" class="error" role="alert">{{ errorMessage() }}</p>
+  </header>
+
+  <main class="grid" [class.empty]="visiblePrs().length === 0">
+    <ng-container *ngIf="visiblePrs().length > 0; else emptyTpl">
+      <app-pr-card
+        *ngFor="let pr of visiblePrs(); trackBy: trackPr"
+        [pr]="pr"
+      ></app-pr-card>
+    </ng-container>
+    <ng-template #emptyTpl>
+      <div class="empty-state">
+        <span class="big">// NO_SIGNAL</span>
+        <span *ngIf="loading()">scanning the wire…</span>
+        <span *ngIf="!loading() && pullRequests().length === 0">No open PRs in the configured repos.</span>
+        <span *ngIf="!loading() && pullRequests().length > 0 && filterMode() === 'failing'">
+          No failing builds — the run is clean.
+        </span>
+      </div>
+    </ng-template>
+  </main>
+</section>

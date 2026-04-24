@@ -1,0 +1,75 @@
+<section class="settings-shell">
+  <div class="settings-panel">
+    <h1 class="title">JACK_IN<span class="cursor">_</span></h1>
+    <p class="subtitle">Connect the dashboard to GitHub to begin the run.</p>
+
+    <form (submit)="$event.preventDefault(); save()" class="form">
+      <label class="field">
+        <span class="label">GitHub Personal Access Token</span>
+        <input
+          type="password"
+          autocomplete="off"
+          spellcheck="false"
+          placeholder="ghp_…"
+          [ngModel]="token()"
+          (ngModelChange)="token.set($event)"
+          name="token"
+          required
+        />
+        <small class="hint">
+          Create one at
+          <a href="https://github.com/settings/tokens?type=beta" target="_blank" rel="noopener">
+            github.com/settings/tokens</a
+          >
+          with read access to <code>pull_requests</code>, <code>checks</code>, and <code>metadata</code>.
+          Stored only in this browser's <code>localStorage</code>.
+        </small>
+      </label>
+
+      <label class="field">
+        <span class="label">Repositories</span>
+        <textarea
+          rows="5"
+          placeholder="owner/repo&#10;another-owner/another-repo"
+          [ngModel]="reposText()"
+          (ngModelChange)="reposText.set($event)"
+          name="repos"
+          required
+        ></textarea>
+        <small class="hint">One per line, format <code>owner/repo</code>.</small>
+      </label>
+
+      <label class="field">
+        <span class="label">Refresh interval (seconds)</span>
+        <input
+          type="number"
+          min="15"
+          step="5"
+          [ngModel]="refreshSeconds()"
+          (ngModelChange)="refreshSeconds.set($event)"
+          name="refresh"
+        />
+      </label>
+
+      <p
+        *ngIf="status() === 'error'"
+        class="status error"
+        role="alert"
+      >
+        {{ errorMessage() }}
+      </p>
+      <p *ngIf="status() === 'success' && authenticatedAs() as user" class="status success">
+        Authenticated as &#64;{{ user }} — entering the grid…
+      </p>
+
+      <div class="actions">
+        <button type="submit" class="btn primary" [disabled]="status() === 'validating'">
+          <span *ngIf="status() !== 'validating'">JACK IN</span>
+          <span *ngIf="status() === 'validating'">CONNECTING…</span>
+        </button>
+        <button *ngIf="canCancel()" type="button" class="btn ghost" (click)="cancel()">CANCEL</button>
+        <button type="button" class="btn danger" (click)="clearAll()">CLEAR</button>
+      </div>
+    </form>
+  </div>
+</section>

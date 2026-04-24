@@ -1,0 +1,184 @@
+@use '../../../styles/cyberpunk' as cp;
+
+:host {
+  display: block;
+  position: relative;
+  z-index: 1;
+}
+
+.settings-shell {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 1rem;
+}
+
+.settings-panel {
+  width: min(560px, 100%);
+  padding: 2.2rem 2rem 1.8rem;
+  background: cp.$bg-panel;
+  backdrop-filter: blur(6px);
+  border: 1px solid cp.$neon-cyan;
+  border-radius: 8px;
+  box-shadow:
+    0 0 0 1px rgba(0, 240, 255, 0.25),
+    0 0 30px rgba(255, 60, 200, 0.4),
+    inset 0 0 60px rgba(0, 0, 0, 0.6);
+  color: cp.$text-primary;
+  font-family: cp.$font-mono;
+}
+
+.title {
+  margin: 0 0 0.25rem;
+  font-family: cp.$font-display;
+  font-size: 2.4rem;
+  letter-spacing: 0.18em;
+  @include cp.neon-text(cp.$neon-pink);
+
+  .cursor {
+    color: cp.$neon-cyan;
+    animation: blink 1s steps(2) infinite;
+  }
+}
+
+.subtitle {
+  margin: 0 0 1.5rem;
+  color: cp.$text-secondary;
+  letter-spacing: 0.08em;
+  font-size: 0.85rem;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.label {
+  font-size: 0.72rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: cp.$neon-cyan;
+  text-shadow: 0 0 6px rgba(0, 240, 255, 0.5);
+}
+
+input,
+textarea {
+  width: 100%;
+  background: rgba(0, 0, 0, 0.55);
+  border: 1px solid rgba(0, 240, 255, 0.35);
+  color: cp.$text-primary;
+  padding: 0.65rem 0.8rem;
+  border-radius: 4px;
+  font-family: cp.$font-mono;
+  font-size: 0.95rem;
+  letter-spacing: 0.04em;
+  outline: none;
+  transition: border-color 120ms ease, box-shadow 120ms ease;
+
+  &:focus {
+    border-color: cp.$neon-pink;
+    box-shadow: 0 0 0 1px cp.$neon-pink, 0 0 14px rgba(255, 60, 200, 0.45);
+  }
+}
+
+textarea {
+  resize: vertical;
+  min-height: 110px;
+}
+
+.hint {
+  color: cp.$text-secondary;
+  font-size: 0.72rem;
+  line-height: 1.5;
+
+  a {
+    color: cp.$neon-pink;
+  }
+  code {
+    background: rgba(0, 240, 255, 0.1);
+    color: cp.$neon-cyan;
+    padding: 0.05em 0.35em;
+    border-radius: 3px;
+  }
+}
+
+.status {
+  margin: 0;
+  padding: 0.55rem 0.7rem;
+  border-radius: 4px;
+  font-size: 0.85rem;
+
+  &.error {
+    color: cp.$neon-red;
+    border: 1px solid rgba(255, 70, 100, 0.6);
+    background: rgba(255, 70, 100, 0.1);
+  }
+  &.success {
+    color: cp.$neon-green;
+    border: 1px solid rgba(76, 255, 165, 0.6);
+    background: rgba(76, 255, 165, 0.08);
+  }
+}
+
+.actions {
+  display: flex;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+}
+
+.btn {
+  font-family: cp.$font-display;
+  letter-spacing: 0.18em;
+  font-size: 0.85rem;
+  padding: 0.6rem 1.2rem;
+  background: transparent;
+  color: cp.$text-primary;
+  border: 1px solid cp.$neon-cyan;
+  border-radius: 3px;
+  cursor: pointer;
+  transition: background 120ms ease, color 120ms ease, box-shadow 120ms ease;
+
+  &:hover:not(:disabled) {
+    background: rgba(0, 240, 255, 0.1);
+    box-shadow: 0 0 12px rgba(0, 240, 255, 0.4);
+  }
+  &:disabled {
+    opacity: 0.5;
+    cursor: progress;
+  }
+
+  &.primary {
+    border-color: cp.$neon-pink;
+    color: cp.$neon-pink;
+    text-shadow: 0 0 6px rgba(255, 60, 200, 0.6);
+    &:hover:not(:disabled) {
+      background: rgba(255, 60, 200, 0.12);
+      box-shadow: 0 0 16px rgba(255, 60, 200, 0.55);
+    }
+  }
+  &.ghost {
+    border-color: rgba(255, 255, 255, 0.3);
+    color: cp.$text-secondary;
+  }
+  &.danger {
+    border-color: cp.$neon-red;
+    color: cp.$neon-red;
+    &:hover:not(:disabled) {
+      background: rgba(255, 70, 100, 0.12);
+      box-shadow: 0 0 12px rgba(255, 70, 100, 0.5);
+    }
+  }
+}
+
+@keyframes blink {
+  0%, 49% { opacity: 1; }
+  50%, 100% { opacity: 0; }
+}

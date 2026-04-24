@@ -1,0 +1,16 @@
+<app-retro-grid [alert]="alertState.active() && view() === 'dashboard'"></app-retro-grid>
+<div class="scanlines" aria-hidden="true"></div>
+<div class="vignette" aria-hidden="true"></div>
+
+<ng-container [ngSwitch]="view()">
+  <app-settings
+    *ngSwitchCase="'settings'"
+    (saved)="onSettingsSaved()"
+    (cancelled)="onSettingsCancelled()"
+  ></app-settings>
+
+  <app-dashboard
+    *ngSwitchCase="'dashboard'"
+    (openSettings)="showSettings()"
+  ></app-dashboard>
+</ng-container>

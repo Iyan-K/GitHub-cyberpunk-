@@ -1,0 +1,250 @@
+@use '../../../styles/cyberpunk' as cp;
+
+:host {
+  display: block;
+  position: relative;
+  z-index: 1;
+}
+
+.dashboard {
+  padding: 1.4rem 1.6rem 3rem;
+  max-width: 1400px;
+  margin: 0 auto;
+  color: cp.$text-primary;
+  font-family: cp.$font-mono;
+}
+
+.topbar {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.9rem;
+  margin-bottom: 1.5rem;
+  padding: 1rem 1.1rem;
+  background: cp.$bg-panel;
+  backdrop-filter: blur(4px);
+  @include cp.glow-border(cp.$neon-cyan);
+  border-radius: 8px;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  flex-wrap: wrap;
+}
+
+.logo {
+  font-size: 1.8rem;
+  color: cp.$neon-pink;
+  text-shadow: 0 0 10px cp.$neon-pink;
+}
+
+.title {
+  margin: 0;
+  font-family: cp.$font-display;
+  font-size: 1.5rem;
+  letter-spacing: 0.22em;
+  @include cp.neon-text(cp.$neon-cyan);
+
+  .hl {
+    color: cp.$neon-pink;
+    text-shadow:
+      0 0 6px cp.$neon-pink,
+      0 0 14px cp.$neon-pink;
+  }
+}
+
+.version {
+  margin-left: auto;
+  font-size: 0.7rem;
+  letter-spacing: 0.18em;
+  color: cp.$neon-green;
+  text-shadow: 0 0 6px rgba(76, 255, 165, 0.6);
+}
+
+.stats {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.7rem;
+
+  .stat {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 0.5rem 0.6rem;
+    border: 1px solid rgba(0, 240, 255, 0.4);
+    border-radius: 4px;
+    background: rgba(0, 0, 0, 0.45);
+
+    .num {
+      font-family: cp.$font-display;
+      font-size: 1.6rem;
+      letter-spacing: 0.04em;
+    }
+    .lbl {
+      font-size: 0.7rem;
+      letter-spacing: 0.18em;
+      color: cp.$text-secondary;
+    }
+
+    &.total .num {
+      @include cp.neon-text(cp.$neon-cyan);
+    }
+    &.passing .num {
+      @include cp.neon-text(cp.$neon-green);
+    }
+    &.pending .num {
+      @include cp.neon-text(cp.$neon-yellow);
+    }
+    &.failing .num {
+      @include cp.neon-text(cp.$text-secondary);
+    }
+    &.failing.alert {
+      border-color: cp.$neon-red;
+      animation: failFlash 1.2s ease-in-out infinite;
+      .num {
+        @include cp.neon-text(cp.$neon-red);
+      }
+    }
+  }
+}
+
+.controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem 1.2rem;
+  align-items: center;
+}
+
+.group {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  flex-wrap: wrap;
+
+  &.end {
+    margin-left: auto;
+  }
+}
+
+.group-label {
+  font-size: 0.7rem;
+  letter-spacing: 0.16em;
+  color: cp.$text-secondary;
+  margin-right: 0.2rem;
+}
+
+.chip {
+  font-family: cp.$font-display;
+  font-size: 0.72rem;
+  letter-spacing: 0.16em;
+  padding: 0.35rem 0.7rem;
+  background: transparent;
+  color: cp.$text-secondary;
+  border: 1px solid rgba(0, 240, 255, 0.4);
+  border-radius: 3px;
+  cursor: pointer;
+  transition: all 120ms ease;
+
+  &:hover:not(:disabled) {
+    color: cp.$neon-cyan;
+    border-color: cp.$neon-cyan;
+    box-shadow: 0 0 10px rgba(0, 240, 255, 0.45);
+  }
+  &.active {
+    color: cp.$neon-pink;
+    border-color: cp.$neon-pink;
+    text-shadow: 0 0 6px cp.$neon-pink;
+  }
+  &.ghost {
+    border-style: dashed;
+  }
+  &:disabled {
+    opacity: 0.5;
+    cursor: progress;
+  }
+}
+
+.meta-row {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  font-size: 0.72rem;
+  color: cp.$text-secondary;
+  letter-spacing: 0.06em;
+
+  .repos {
+    color: cp.$neon-cyan;
+    text-shadow: 0 0 4px rgba(0, 240, 255, 0.5);
+  }
+  .last-sync {
+    color: cp.$neon-pink;
+    text-shadow: 0 0 4px rgba(255, 60, 200, 0.5);
+  }
+}
+
+.error {
+  margin: 0;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid cp.$neon-red;
+  border-radius: 3px;
+  color: cp.$neon-red;
+  background: rgba(255, 70, 100, 0.1);
+  font-size: 0.85rem;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 1rem;
+
+  &.empty {
+    grid-template-columns: 1fr;
+  }
+}
+
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 4rem 1rem;
+  border: 1px dashed rgba(0, 240, 255, 0.4);
+  border-radius: 6px;
+  color: cp.$text-secondary;
+  font-family: cp.$font-mono;
+
+  .big {
+    font-family: cp.$font-display;
+    font-size: 1.4rem;
+    letter-spacing: 0.22em;
+    @include cp.neon-text(cp.$neon-pink);
+  }
+}
+
+@keyframes failFlash {
+  0%, 100% {
+    box-shadow: 0 0 8px rgba(255, 70, 100, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 22px rgba(255, 70, 100, 0.85);
+  }
+}
+
+@media (min-width: 900px) {
+  .topbar {
+    grid-template-columns: 1fr auto;
+    grid-template-areas:
+      'brand stats'
+      'controls controls'
+      'meta meta'
+      'error error';
+    align-items: center;
+  }
+  .brand { grid-area: brand; }
+  .stats { grid-area: stats; }
+  .controls { grid-area: controls; }
+  .meta-row { grid-area: meta; }
+  .error { grid-area: error; }
+}
