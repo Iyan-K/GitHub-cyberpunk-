@@ -93,6 +93,22 @@ export class DashboardComponent implements OnInit, OnDestroy {
     this.startPolling(cfg.owner, cfg.repo);
   }
 
+  logout() {
+    this.subs.forEach(s => s.unsubscribe());
+    this.subs = [];
+    this.githubService.clearConfig();
+    this.config.set(null);
+    this.pullRequests.set([]);
+    this.workflowRuns.set([]);
+    this.loading.set(false);
+    this.error.set('');
+    this.authenticatedUser.set(null);
+    this.selectedAuthor.set(DashboardComponent.FILTER_ME);
+    this.lastUpdated.set(null);
+    this.alertService.clearCriticalAlert();
+    this.showConfig.set(false);
+  }
+
   onConfigCancelled() {
     if (this.config()) {
       this.showConfig.set(false);

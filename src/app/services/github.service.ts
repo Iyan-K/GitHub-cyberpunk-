@@ -46,6 +46,15 @@ export class GithubService {
     return null;
   }
 
+  clearConfig() {
+    this.config.set(null);
+    try {
+      localStorage.removeItem(GithubService.STORAGE_KEY);
+    } catch {
+      // Storage not available
+    }
+  }
+
   private saveConfigToStorage(config: GithubConfig) {
     try {
       localStorage.setItem(GithubService.STORAGE_KEY, JSON.stringify(config));

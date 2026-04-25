@@ -170,6 +170,11 @@
       }
     }
 
+    .header-buttons {
+      display: flex;
+      gap: 8px;
+    }
+
     .config-btn {
       background: transparent;
       border: 1px solid rgba(0, 245, 255, 0.3);
@@ -185,6 +190,24 @@
         border-color: #00f5ff;
         color: #00f5ff;
         box-shadow: 0 0 10px rgba(0, 245, 255, 0.3);
+      }
+    }
+
+    .logout-btn {
+      background: transparent;
+      border: 1px solid rgba(255, 45, 120, 0.3);
+      color: rgba(255, 45, 120, 0.6);
+      font-family: 'Courier New', monospace;
+      font-size: 11px;
+      letter-spacing: 2px;
+      padding: 5px 12px;
+      cursor: pointer;
+      transition: all 0.2s;
+
+      &:hover {
+        border-color: #ff2d78;
+        color: #ff2d78;
+        box-shadow: 0 0 10px rgba(255, 45, 120, 0.3);
       }
     }
   }
