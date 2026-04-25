@@ -42,7 +42,12 @@
           <span class="dot yellow"></span>{{ runningBuilds().length }} RUN
         </span>
       </div>
-      <button class="config-btn" (click)="openConfig()">⚙ CONFIG</button>
+      <div class="header-buttons">
+        <button class="config-btn" (click)="openConfig()">⚙ CONFIG</button>
+        @if (config()) {
+          <button class="logout-btn" (click)="logout()">⏻ LOGOUT</button>
+        }
+      </div>
     </div>
   </header>
 
