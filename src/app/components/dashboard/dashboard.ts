@@ -1,5 +1,6 @@
 import { Component, OnInit, OnDestroy, signal, computed, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { Subscription } from 'rxjs';
 import { GithubService } from '../../services/github.service';
 import { AlertService } from '../../services/alert.service';
@@ -12,13 +13,16 @@ import { ConfigModalComponent } from '../config-modal/config-modal';
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, P5CanvasComponent, PrCardComponent, BuildCardComponent, ConfigModalComponent],
+  imports: [CommonModule, FormsModule, P5CanvasComponent, PrCardComponent, BuildCardComponent, ConfigModalComponent],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.scss'
 })
 export class DashboardComponent implements OnInit, OnDestroy {
   private githubService = inject(GithubService);
   private alertService = inject(AlertService);
+
+  static readonly FILTER_ME = '__me__';
+  static readonly FILTER_ALL = '__all__';
 
   pullRequests = signal<PullRequest[]>([]);
   workflowRuns = signal<WorkflowRun[]>([]);
@@ -27,12 +31,30 @@ export class DashboardComponent implements OnInit, OnDestroy {
   showConfig = signal(false);
   lastUpdated = signal<Date | null>(null);
   config = signal<GithubConfig | null>(null);
+  authenticatedUser = signal<string | null>(null);
+  selectedAuthor = signal<string>(DashboardComponent.FILTER_ME);
 
   criticalAlert = this.alertService.criticalAlert;
 
-  openPRs = computed(() => this.pullRequests().filter(pr => pr.state === 'open' && !pr.draft));
-  draftPRs = computed(() => this.pullRequests().filter(pr => pr.draft));
-  closedPRs = computed(() => this.pullRequests().filter(pr => pr.state === 'closed'));
+  filteredPRs = computed(() => {
+    const prs = this.pullRequests();
+    const author = this.selectedAuthor();
+    const me = this.authenticatedUser();
+
+    if (author === DashboardComponent.FILTER_ALL) return prs;
+    if (author === DashboardComponent.FILTER_ME && me) return prs.filter(pr => pr.user.login === me);
+    if (author === DashboardComponent.FILTER_ME && !me) return prs;
+    return prs.filter(pr => pr.user.login === author);
+  });
+
+  uniqueAuthors = computed(() => {
+    const authors = new Set(this.pullRequests().map(pr => pr.user.login));
+    return Array.from(authors).sort((a, b) => a.localeCompare(b));
+  });
+
+  openPRs = computed(() => this.filteredPRs().filter(pr => pr.state === 'open' && !pr.draft));
+  draftPRs = computed(() => this.filteredPRs().filter(pr => pr.draft));
+  closedPRs = computed(() => this.filteredPRs().filter(pr => pr.state === 'closed'));
   failedBuilds = computed(() => this.workflowRuns().filter(r => r.conclusion === 'failure'));
   successBuilds = computed(() => this.workflowRuns().filter(r => r.conclusion === 'success'));
   runningBuilds = computed(() => this.workflowRuns().filter(r => r.status === 'in_progress'));
@@ -44,7 +66,17 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.clockInterval = setInterval(() => this.currentTime.set(new Date()), 1000);
-    this.showConfig.set(true);
+
+    const saved = this.githubService.loadSavedConfig();
+    if (saved) {
+      this.config.set(saved);
+      this.githubService.setConfig(saved);
+      this.showConfig.set(false);
+      this.fetchAuthenticatedUser();
+      this.startPolling(saved.owner, saved.repo);
+    } else {
+      this.showConfig.set(true);
+    }
   }
 
   ngOnDestroy() {
@@ -57,6 +89,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
     this.config.set(cfg);
     this.githubService.setConfig(cfg);
     this.showConfig.set(false);
+    this.fetchAuthenticatedUser();
     this.startPolling(cfg.owner, cfg.repo);
   }
 
@@ -72,6 +105,23 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   dismissAlert() {
     this.alertService.clearCriticalAlert();
+  }
+
+  onAuthorFilterChange(value: string) {
+    this.selectedAuthor.set(value);
+  }
+
+  private fetchAuthenticatedUser() {
+    this.githubService.getAuthenticatedUser().subscribe(user => {
+      if (user?.login) {
+        this.authenticatedUser.set(user.login);
+      } else {
+        this.authenticatedUser.set(null);
+        if (this.selectedAuthor() === DashboardComponent.FILTER_ME) {
+          this.selectedAuthor.set(DashboardComponent.FILTER_ALL);
+        }
+      }
+    });
   }
 
   private startPolling(owner: string, repo: string) {

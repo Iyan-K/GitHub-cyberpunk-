@@ -81,11 +81,28 @@
               <span class="stat pink">{{ closedPRs().length }} CLOSED</span>
             </div>
           </div>
+          <div class="panel-filter">
+            <label class="filter-label">AUTHOR:</label>
+            <select
+              class="cyber-select"
+              [ngModel]="selectedAuthor()"
+              (ngModelChange)="onAuthorFilterChange($event)"
+            >
+              @if (authenticatedUser()) {
+                <option value="__me__">ME ({{ authenticatedUser() }})</option>
+              }
+              <option value="__all__">ALL AUTHORS</option>
+              @for (author of uniqueAuthors(); track author) {
+                <option [value]="author">{{ author }}</option>
+              }
+            </select>
+            <span class="filter-count">{{ filteredPRs().length }} / {{ pullRequests().length }}</span>
+          </div>
           <div class="panel-body">
-            @if (pullRequests().length === 0) {
+            @if (filteredPRs().length === 0) {
               <div class="empty-state">NO PULL REQUESTS FOUND</div>
             }
-            @for (pr of pullRequests(); track pr.id) {
+            @for (pr of filteredPRs(); track pr.id) {
               <app-pr-card [pr]="pr"></app-pr-card>
             }
           </div>
