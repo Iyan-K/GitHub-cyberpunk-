@@ -38,12 +38,18 @@ export class ConfigModalComponent implements OnInit {
       this.validationError = '';
       const config: GithubConfig = { token: this.token, owner: this.owner, repo: this.repo };
       this.githubService.setConfig(config);
-      this.githubService.validateConnection(this.owner, this.repo).subscribe(result => {
-        this.validating = false;
-        if (result.valid) {
-          this.configSaved.emit(config);
-        } else {
-          this.validationError = result.error || 'Failed to connect to repository.';
+      this.githubService.validateConnection(this.owner, this.repo).subscribe({
+        next: result => {
+          this.validating = false;
+          if (result.valid) {
+            this.configSaved.emit(config);
+          } else {
+            this.validationError = result.error || 'Failed to connect to repository.';
+          }
+        },
+        error: () => {
+          this.validating = false;
+          this.validationError = 'Unexpected error while validating connection.';
         }
       });
     }

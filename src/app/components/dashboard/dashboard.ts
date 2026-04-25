@@ -166,9 +166,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
     const buildSub = this.githubService.pollWorkflowRuns(owner, repo, 30000).subscribe({
       next: data => {
         if ('error' in data) {
-          if (!this.error()) {
-            this.error.set(data.error);
-          }
+          this.error.set(data.error);
         } else {
           this.workflowRuns.set(data.workflow_runs || []);
           this.checkForFailures(data.workflow_runs || []);

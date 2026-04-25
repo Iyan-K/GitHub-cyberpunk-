@@ -1,6 +1,6 @@
 import { Injectable, signal } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpErrorResponse } from '@angular/common/http';
-import { Observable, interval, switchMap, startWith, catchError, of } from 'rxjs';
+import { Observable, interval, switchMap, startWith, catchError, of, map } from 'rxjs';
 import { PullRequest, WorkflowRun, GithubConfig } from '../models/github.models';
 
 @Injectable({ providedIn: 'root' })
@@ -101,7 +101,7 @@ export class GithubService {
       `${this.apiBase}/repos/${owner}/${repo}`,
       { headers: this.getHeaders() }
     ).pipe(
-      switchMap(() => of({ valid: true })),
+      map(() => ({ valid: true }) as { valid: boolean; error?: string }),
       catchError((err: HttpErrorResponse) => of({ valid: false, error: this.formatApiError(err) }))
     );
   }
