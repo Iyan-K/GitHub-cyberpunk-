@@ -24,8 +24,18 @@ export class GithubService {
     try {
       const saved = localStorage.getItem(GithubService.STORAGE_KEY);
       if (saved) {
-        const config = JSON.parse(saved) as GithubConfig;
-        if (config.owner && config.repo) {
+        const parsed = JSON.parse(saved);
+        if (
+          typeof parsed === 'object' && parsed !== null &&
+          typeof parsed.owner === 'string' && parsed.owner.length > 0 &&
+          typeof parsed.repo === 'string' && parsed.repo.length > 0 &&
+          (typeof parsed.token === 'string' || parsed.token === undefined)
+        ) {
+          const config: GithubConfig = {
+            token: typeof parsed.token === 'string' ? parsed.token : '',
+            owner: parsed.owner,
+            repo: parsed.repo,
+          };
           this.config.set(config);
           return config;
         }

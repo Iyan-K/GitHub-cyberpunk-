@@ -21,6 +21,9 @@ export class DashboardComponent implements OnInit, OnDestroy {
   private githubService = inject(GithubService);
   private alertService = inject(AlertService);
 
+  static readonly FILTER_ME = '__me__';
+  static readonly FILTER_ALL = '__all__';
+
   pullRequests = signal<PullRequest[]>([]);
   workflowRuns = signal<WorkflowRun[]>([]);
   loading = signal(false);
@@ -29,7 +32,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   lastUpdated = signal<Date | null>(null);
   config = signal<GithubConfig | null>(null);
   authenticatedUser = signal<string | null>(null);
-  selectedAuthor = signal<string>('__me__');
+  selectedAuthor = signal<string>(DashboardComponent.FILTER_ME);
 
   criticalAlert = this.alertService.criticalAlert;
 
@@ -38,9 +41,9 @@ export class DashboardComponent implements OnInit, OnDestroy {
     const author = this.selectedAuthor();
     const me = this.authenticatedUser();
 
-    if (author === '__all__') return prs;
-    if (author === '__me__' && me) return prs.filter(pr => pr.user.login === me);
-    if (author === '__me__' && !me) return prs;
+    if (author === DashboardComponent.FILTER_ALL) return prs;
+    if (author === DashboardComponent.FILTER_ME && me) return prs.filter(pr => pr.user.login === me);
+    if (author === DashboardComponent.FILTER_ME && !me) return prs;
     return prs.filter(pr => pr.user.login === author);
   });
 
@@ -114,8 +117,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
         this.authenticatedUser.set(user.login);
       } else {
         this.authenticatedUser.set(null);
-        if (this.selectedAuthor() === '__me__') {
-          this.selectedAuthor.set('__all__');
+        if (this.selectedAuthor() === DashboardComponent.FILTER_ME) {
+          this.selectedAuthor.set(DashboardComponent.FILTER_ALL);
         }
       }
     });
