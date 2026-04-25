@@ -7,15 +7,41 @@ import { PullRequest, WorkflowRun, GithubConfig } from '../models/github.models'
 export class GithubService {
   private apiBase = 'https://api.github.com';
   private config = signal<GithubConfig | null>(null);
+  private static readonly STORAGE_KEY = 'cyberhub_config';
 
   constructor(private http: HttpClient) {}
 
   setConfig(config: GithubConfig) {
     this.config.set(config);
+    this.saveConfigToStorage(config);
   }
 
   getConfig() {
     return this.config();
+  }
+
+  loadSavedConfig(): GithubConfig | null {
+    try {
+      const saved = localStorage.getItem(GithubService.STORAGE_KEY);
+      if (saved) {
+        const config = JSON.parse(saved) as GithubConfig;
+        if (config.owner && config.repo) {
+          this.config.set(config);
+          return config;
+        }
+      }
+    } catch {
+      // Ignore invalid stored data
+    }
+    return null;
+  }
+
+  private saveConfigToStorage(config: GithubConfig) {
+    try {
+      localStorage.setItem(GithubService.STORAGE_KEY, JSON.stringify(config));
+    } catch {
+      // Storage not available
+    }
   }
 
   private getHeaders(): HttpHeaders {
@@ -26,9 +52,20 @@ export class GithubService {
     return new HttpHeaders();
   }
 
+  getAuthenticatedUser(): Observable<{ login: string } | null> {
+    const cfg = this.config();
+    if (!cfg?.token) {
+      return of(null);
+    }
+    return this.http.get<{ login: string }>(
+      `${this.apiBase}/user`,
+      { headers: this.getHeaders() }
+    ).pipe(catchError(() => of(null)));
+  }
+
   getPullRequests(owner: string, repo: string): Observable<PullRequest[]> {
     return this.http.get<PullRequest[]>(
-      `${this.apiBase}/repos/${owner}/${repo}/pulls?state=all&per_page=20&sort=updated`,
+      `${this.apiBase}/repos/${owner}/${repo}/pulls?state=all&per_page=100&sort=updated`,
       { headers: this.getHeaders() }
     ).pipe(catchError(() => of([])));
   }
