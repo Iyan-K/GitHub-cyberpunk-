@@ -147,8 +147,13 @@ export class DashboardComponent implements OnInit, OnDestroy {
     this.error.set('');
 
     const prSub = this.githubService.pollPullRequests(owner, repo, 30000).subscribe({
-      next: prs => {
-        this.pullRequests.set(prs);
+      next: result => {
+        if ('error' in result) {
+          this.error.set(result.error);
+        } else {
+          this.pullRequests.set(result);
+          this.error.set('');
+        }
         this.lastUpdated.set(new Date());
         this.loading.set(false);
       },
@@ -160,10 +165,16 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
     const buildSub = this.githubService.pollWorkflowRuns(owner, repo, 30000).subscribe({
       next: data => {
-        this.workflowRuns.set(data.workflow_runs || []);
+        if ('error' in data) {
+          if (!this.error()) {
+            this.error.set(data.error);
+          }
+        } else {
+          this.workflowRuns.set(data.workflow_runs || []);
+          this.checkForFailures(data.workflow_runs || []);
+        }
         this.lastUpdated.set(new Date());
         this.loading.set(false);
-        this.checkForFailures(data.workflow_runs || []);
       },
       error: () => {
         this.error.set('Failed to fetch workflow runs');

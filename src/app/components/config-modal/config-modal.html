@@ -33,10 +33,18 @@
           [(ngModel)]="repo"
         />
       </div>
+      @if (validationError) {
+        <div class="validation-error">
+          <span class="error-icon">⚠</span>
+          <span class="error-message">{{ validationError }}</span>
+        </div>
+      }
     </div>
     <div class="modal-footer">
       <button class="cyber-btn secondary" (click)="cancel()">CANCEL</button>
-      <button class="cyber-btn primary" (click)="save()" [disabled]="!owner || !repo">CONNECT</button>
+      <button class="cyber-btn primary" (click)="save()" [disabled]="!owner || !repo || validating">
+        {{ validating ? 'VALIDATING...' : 'CONNECT' }}
+      </button>
     </div>
   </div>
 </div>
