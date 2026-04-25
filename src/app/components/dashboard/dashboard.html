@@ -1,0 +1,123 @@
+<app-p5-canvas [criticalAlert]="criticalAlert()"></app-p5-canvas>
+
+@if (criticalAlert()) {
+  <div class="critical-alert-banner" (click)="dismissAlert()">
+    <span class="alert-icon">⚠</span>
+    <span class="alert-text">CRITICAL BUILD FAILURE DETECTED — CLICK TO DISMISS</span>
+    <span class="alert-icon">⚠</span>
+  </div>
+}
+
+<div class="dashboard-container" [class.critical-mode]="criticalAlert()">
+  <!-- Header -->
+  <header class="dashboard-header">
+    <div class="header-left">
+      <div class="logo-text">
+        <span class="logo-cyber">CYBER</span><span class="logo-hub">HUB</span>
+      </div>
+      @if (config()) {
+        <div class="repo-info">
+          <span class="repo-label">// TRACKING //</span>
+          <span class="repo-name">{{ config()!.owner }}/{{ config()!.repo }}</span>
+        </div>
+      }
+    </div>
+
+    <div class="header-center">
+      <div class="clock">{{ formatTime(currentTime()) }}</div>
+      @if (lastUpdated()) {
+        <div class="last-updated">SYNC: {{ formatTime(lastUpdated()!) }}</div>
+      }
+    </div>
+
+    <div class="header-right">
+      <div class="status-indicators">
+        <span class="indicator" [class.active]="openPRs().length > 0">
+          <span class="dot cyan"></span>{{ openPRs().length }} OPEN
+        </span>
+        <span class="indicator" [class.active]="failedBuilds().length > 0">
+          <span class="dot pink"></span>{{ failedBuilds().length }} FAIL
+        </span>
+        <span class="indicator" [class.active]="runningBuilds().length > 0">
+          <span class="dot yellow"></span>{{ runningBuilds().length }} RUN
+        </span>
+      </div>
+      <button class="config-btn" (click)="openConfig()">⚙ CONFIG</button>
+    </div>
+  </header>
+
+  <!-- Main content -->
+  <div class="dashboard-content">
+    @if (loading() && pullRequests().length === 0) {
+      <div class="loading-screen">
+        <div class="loading-animation">
+          <div class="loading-bar"></div>
+          <div class="loading-text">CONNECTING TO GITHUB API...</div>
+        </div>
+      </div>
+    } @else if (error()) {
+      <div class="error-panel">
+        <span class="error-icon">⚠</span>
+        <span class="error-text">{{ error() }}</span>
+        <button class="retry-btn" (click)="openConfig()">RECONFIGURE</button>
+      </div>
+    } @else if (!config()) {
+      <div class="no-config">
+        <div class="welcome-title">
+          <span class="glitch-text" data-text="CYBERHUB">CYBERHUB</span>
+        </div>
+        <div class="welcome-sub">GITHUB PR DASHBOARD — RETROWAVE EDITION</div>
+        <button class="start-btn" (click)="openConfig()">// INITIALIZE CONNECTION //</button>
+      </div>
+    } @else {
+      <div class="panels-grid">
+        <!-- Pull Requests Panel -->
+        <div class="panel">
+          <div class="panel-header">
+            <span class="panel-title">PULL REQUESTS</span>
+            <div class="panel-stats">
+              <span class="stat cyan">{{ openPRs().length }} OPEN</span>
+              <span class="stat grey">{{ draftPRs().length }} DRAFT</span>
+              <span class="stat pink">{{ closedPRs().length }} CLOSED</span>
+            </div>
+          </div>
+          <div class="panel-body">
+            @if (pullRequests().length === 0) {
+              <div class="empty-state">NO PULL REQUESTS FOUND</div>
+            }
+            @for (pr of pullRequests(); track pr.id) {
+              <app-pr-card [pr]="pr"></app-pr-card>
+            }
+          </div>
+        </div>
+
+        <!-- Build Status Panel -->
+        <div class="panel" [class.critical-panel]="failedBuilds().length > 0">
+          <div class="panel-header">
+            <span class="panel-title">BUILD STATUS</span>
+            <div class="panel-stats">
+              <span class="stat cyan">{{ successBuilds().length }} PASS</span>
+              <span class="stat yellow">{{ runningBuilds().length }} RUN</span>
+              <span class="stat pink">{{ failedBuilds().length }} FAIL</span>
+            </div>
+          </div>
+          <div class="panel-body">
+            @if (workflowRuns().length === 0) {
+              <div class="empty-state">NO WORKFLOW RUNS FOUND</div>
+            }
+            @for (run of workflowRuns(); track run.id) {
+              <app-build-card [run]="run"></app-build-card>
+            }
+          </div>
+        </div>
+      </div>
+    }
+  </div>
+</div>
+
+@if (showConfig()) {
+  <app-config-modal
+    (configSaved)="onConfigSaved($event)"
+    (cancelled)="onConfigCancelled()"
+  ></app-config-modal>
+}

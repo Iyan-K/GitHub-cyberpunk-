@@ -1,0 +1,42 @@
+<div class="modal-overlay">
+  <div class="modal-panel">
+    <div class="modal-header">
+      <span class="glitch-text" data-text="// SYSTEM CONFIG //">// SYSTEM CONFIG //</span>
+      <button class="close-btn" (click)="cancel()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="field-group">
+        <label class="field-label">GITHUB TOKEN <span class="optional">(optional)</span></label>
+        <input
+          type="password"
+          class="cyber-input"
+          placeholder="ghp_xxxxxxxxxxxxxxxxxxxx"
+          [(ngModel)]="token"
+        />
+        <small class="hint">For private repos or higher rate limits. Leave empty for public repos.</small>
+      </div>
+      <div class="field-group">
+        <label class="field-label">OWNER / ORGANIZATION *</label>
+        <input
+          type="text"
+          class="cyber-input"
+          placeholder="e.g. angular"
+          [(ngModel)]="owner"
+        />
+      </div>
+      <div class="field-group">
+        <label class="field-label">REPOSITORY *</label>
+        <input
+          type="text"
+          class="cyber-input"
+          placeholder="e.g. angular"
+          [(ngModel)]="repo"
+        />
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="cyber-btn secondary" (click)="cancel()">CANCEL</button>
+      <button class="cyber-btn primary" (click)="save()" [disabled]="!owner || !repo">CONNECT</button>
+    </div>
+  </div>
+</div>
