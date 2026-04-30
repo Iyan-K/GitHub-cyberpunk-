@@ -19,6 +19,9 @@ export class ConfigModalComponent implements OnInit {
   token = '';
   owner = '';
   repo = '';
+  llmEndpoint = '';
+  llmApiKey = '';
+  llmModel = '';
 
   ngOnInit() {
     const saved = this.githubService.getConfig();
@@ -26,12 +29,22 @@ export class ConfigModalComponent implements OnInit {
       this.token = saved.token;
       this.owner = saved.owner;
       this.repo = saved.repo;
+      this.llmEndpoint = saved.llmEndpoint || '';
+      this.llmApiKey = saved.llmApiKey || '';
+      this.llmModel = saved.llmModel || '';
     }
   }
 
   save() {
     if (this.owner && this.repo) {
-      this.configSaved.emit({ token: this.token, owner: this.owner, repo: this.repo });
+      this.configSaved.emit({
+        token: this.token,
+        owner: this.owner,
+        repo: this.repo,
+        llmEndpoint: this.llmEndpoint.trim() || undefined,
+        llmApiKey: this.llmApiKey.trim() || undefined,
+        llmModel: this.llmModel.trim() || undefined,
+      });
     }
   }
 

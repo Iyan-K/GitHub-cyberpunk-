@@ -35,6 +35,9 @@ export class GithubService {
             token: typeof parsed.token === 'string' ? parsed.token : '',
             owner: parsed.owner,
             repo: parsed.repo,
+            llmEndpoint: typeof parsed.llmEndpoint === 'string' ? parsed.llmEndpoint : undefined,
+            llmApiKey: typeof parsed.llmApiKey === 'string' ? parsed.llmApiKey : undefined,
+            llmModel: typeof parsed.llmModel === 'string' ? parsed.llmModel : undefined,
           };
           this.config.set(config);
           return config;
@@ -115,5 +118,21 @@ export class GithubService {
       `${this.apiBase}/repos/${owner}/${repo}/actions/runs/${runId}/jobs?per_page=100`,
       { headers: this.getHeaders() }
     ).pipe(catchError(() => of({ jobs: [] })));
+  }
+
+  /**
+   * Fetches the raw text logs for a single workflow job. The GitHub API
+   * responds with a 302 redirect to a signed download URL; modern browsers
+   * follow that automatically when we ask for `responseType: 'text'`.
+   *
+   * Used by the "Fixer's Brief" feature to feed an LLM with the failure
+   * context. Returns `null` on any network/permission failure so the UI can
+   * gracefully degrade.
+   */
+  getJobLogs(owner: string, repo: string, jobId: number): Observable<string | null> {
+    return this.http.get(
+      `${this.apiBase}/repos/${owner}/${repo}/actions/jobs/${jobId}/logs`,
+      { headers: this.getHeaders(), responseType: 'text' }
+    ).pipe(catchError(() => of(null)));
   }
 }
