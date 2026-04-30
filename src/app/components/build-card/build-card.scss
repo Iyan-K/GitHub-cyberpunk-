@@ -7,6 +7,9 @@
   align-items: center;
   gap: 12px;
   transition: all 0.2s;
+  text-decoration: none;
+  color: inherit;
+  cursor: pointer;
 
   &.status-failure {
     border-color: rgba(255, 45, 120, 0.4);
@@ -25,6 +28,12 @@
 
   &:hover {
     box-shadow: 0 0 12px rgba(0, 245, 255, 0.15);
+  }
+
+  &:focus-visible {
+    outline: none;
+    border-color: #00f5ff;
+    box-shadow: 0 0 16px rgba(0, 245, 255, 0.4);
   }
 }
 

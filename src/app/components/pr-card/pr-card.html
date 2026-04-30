@@ -1,4 +1,8 @@
-<div class="pr-card" [class]="'status-' + getStatusClass()">
+<a class="pr-card" [class]="'status-' + getStatusClass()"
+   [href]="pr.html_url"
+   target="_blank"
+   rel="noopener noreferrer"
+   [attr.aria-label]="'Open pull request #' + pr.number + ' on GitHub: ' + pr.title">
   <div class="pr-header">
     <span class="pr-number">#{{ pr.number }}</span>
     <span class="pr-status" [class]="'badge-' + getStatusClass()">{{ getStatusLabel() }}</span>
@@ -29,4 +33,4 @@
       <span class="reviewer-count">👥 {{ pr.requested_reviewers.length }}</span>
     }
   </div>
-</div>
+</a>

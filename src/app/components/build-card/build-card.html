@@ -1,4 +1,11 @@
-<div class="build-card" [class]="'status-' + getStatusClass()">
+<a class="build-card" [class]="'status-' + getStatusClass()"
+   [href]="run.html_url"
+   target="_blank"
+   rel="noopener noreferrer"
+   (click)="onClick($event)"
+   [attr.aria-label]="getStatusClass() === 'failure'
+     ? ('Inspect failed build: ' + run.name)
+     : ('Open workflow run on GitHub: ' + run.name)">
   <div class="build-status-icon" [class]="'icon-' + getStatusClass()">
     {{ getStatusIcon() }}
   </div>
@@ -13,4 +20,4 @@
   <div class="build-conclusion" [class]="'label-' + getStatusClass()">
     {{ (run.conclusion || run.status) | uppercase }}
   </div>
-</div>
+</a>

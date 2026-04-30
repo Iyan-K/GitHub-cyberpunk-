@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { WorkflowRun } from '../../models/github.models';
 
@@ -11,6 +11,7 @@ import { WorkflowRun } from '../../models/github.models';
 })
 export class BuildCardComponent {
   @Input() run!: WorkflowRun;
+  @Output() inspect = new EventEmitter<WorkflowRun>();
 
   getStatusClass(): string {
     if (this.run.status === 'in_progress' || this.run.status === 'queued') return 'running';
@@ -37,5 +38,19 @@ export class BuildCardComponent {
     if (days > 0) return `${days}d ago`;
     if (hrs > 0) return `${hrs}h ago`;
     return `${mins}m ago`;
+  }
+
+  /**
+   * For failed runs, intercept the click to open the in-app diagnostics modal.
+   * Modifier-click (ctrl/cmd/middle-button/shift) keeps the native anchor
+   * behavior so the user can still jump straight to GitHub when they want.
+   */
+  onClick(event: MouseEvent) {
+    const isFailure = this.getStatusClass() === 'failure';
+    if (!isFailure) return;
+    if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+    if (event.button !== 0) return;
+    event.preventDefault();
+    this.inspect.emit(this.run);
   }
 }

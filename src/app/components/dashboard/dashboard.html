@@ -43,6 +43,10 @@
         </span>
       </div>
       <div class="header-buttons">
+        <button class="config-btn" (click)="openSquadSettings()" [attr.aria-label]="'Comms filter — current mode ' + soundModeLabel()">
+          <span class="audio-mark" [class.muted]="!audioEnabled()">{{ audioEnabled() ? '♪' : '⊘' }}</span>
+          SQUAD <span class="mode-tag">{{ soundModeLabel() }}</span>
+        </button>
         <button class="config-btn" (click)="openConfig()">⚙ CONFIG</button>
         @if (config()) {
           <button class="logout-btn" (click)="logout()">⏻ LOGOUT</button>
@@ -128,7 +132,7 @@
               <div class="empty-state">NO WORKFLOW RUNS FOUND</div>
             }
             @for (run of workflowRuns(); track run.id) {
-              <app-build-card [run]="run"></app-build-card>
+              <app-build-card [run]="run" (inspect)="inspectBuild($event)"></app-build-card>
             }
           </div>
         </div>
@@ -142,4 +146,16 @@
     (configSaved)="onConfigSaved($event)"
     (cancelled)="onConfigCancelled()"
   ></app-config-modal>
+}
+
+@if (showSquad()) {
+  <app-squad-modal (closed)="closeSquadSettings()"></app-squad-modal>
+}
+
+@if (inspectedRun(); as run) {
+  <app-build-log-modal
+    [run]="run"
+    [config]="config()"
+    (closed)="closeInspect()"
+  ></app-build-log-modal>
 }

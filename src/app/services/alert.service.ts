@@ -11,6 +11,16 @@ export class AlertService {
     this.playAlarm();
   }
 
+  /**
+   * Set the critical visual state without playing audio. Used by the Comms
+   * Filter when a build failure is detected but the current sound mode (Solo /
+   * Squad) says we should *not* sound the alarm — the UI still visibly reflects
+   * that something is broken, but the user isn't audibly nagged about it.
+   */
+  showVisualAlert() {
+    this.criticalAlert.set(true);
+  }
+
   clearCriticalAlert() {
     this.criticalAlert.set(false);
     this.stopAlarm();

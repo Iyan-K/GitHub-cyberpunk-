@@ -1,0 +1,71 @@
+<div class="modal-overlay glitch-overlay" (click)="onBackdropClick($event)">
+  <div class="modal-panel">
+    <div class="modal-header">
+      <span class="glitch-text" data-text="// FLATLINE DIAGNOSTICS //">// FLATLINE DIAGNOSTICS //</span>
+      <button class="close-btn" type="button" (click)="close()" aria-label="Close diagnostics">✕</button>
+    </div>
+
+    @if (run) {
+      <div class="run-summary">
+        <div class="run-name">{{ run.name }}</div>
+        <div class="run-commit">{{ run.head_commit.message }}</div>
+        <div class="run-meta">
+          <span class="meta-item">AUTHOR: <span class="meta-value">{{ run.head_commit.author.name }}</span></span>
+          @if (run.actor?.login) {
+            <span class="meta-item">ACTOR: <span class="meta-value">{{ run.actor!.login }}</span></span>
+          }
+        </div>
+      </div>
+    }
+
+    <div class="modal-body">
+      @if (loading()) {
+        <div class="loading-state">
+          <span class="spinner">⟳</span>
+          <span>JACKING IN — RETRIEVING JOB DATA...</span>
+        </div>
+      } @else if (error()) {
+        <div class="error-state">
+          <span class="error-icon">⚠</span>
+          <span>{{ error() }}</span>
+        </div>
+      } @else if (jobs().length === 0) {
+        <div class="empty-state">NO JOBS RECORDED</div>
+      } @else {
+        @for (job of jobs(); track job.id) {
+          <div class="job-block" [class.job-failed]="isJobFailed(job)">
+            <div class="job-header">
+              <span class="job-status">{{ (job.conclusion || job.status) | uppercase }}</span>
+              <span class="job-name">{{ job.name }}</span>
+              <a class="job-link" [href]="job.html_url" target="_blank" rel="noopener noreferrer">
+                VIEW FULL LOGS →
+              </a>
+            </div>
+            @if (isJobFailed(job) && failedSteps(job).length > 0) {
+              <div class="step-list">
+                <div class="step-list-title">FAILURE TRACE</div>
+                @for (step of failedSteps(job); track step.number) {
+                  <div class="step-row">
+                    <span class="step-marker">✗</span>
+                    <span class="step-num">#{{ step.number }}</span>
+                    <span class="step-name">{{ step.name }}</span>
+                    <span class="step-conclusion">{{ (step.conclusion || step.status) | uppercase }}</span>
+                  </div>
+                }
+              </div>
+            }
+          </div>
+        }
+      }
+    </div>
+
+    <div class="modal-footer">
+      @if (run) {
+        <a class="cyber-btn primary" [href]="run.html_url" target="_blank" rel="noopener noreferrer">
+          OPEN ON GITHUB ↗
+        </a>
+      }
+      <button type="button" class="cyber-btn secondary" (click)="close()">DISCONNECT</button>
+    </div>
+  </div>
+</div>

@@ -1,7 +1,7 @@
 import { Injectable, signal } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable, interval, switchMap, startWith, catchError, of } from 'rxjs';
-import { PullRequest, WorkflowRun, GithubConfig } from '../models/github.models';
+import { PullRequest, WorkflowRun, WorkflowJob, GithubConfig } from '../models/github.models';
 
 @Injectable({ providedIn: 'root' })
 export class GithubService {
@@ -108,5 +108,12 @@ export class GithubService {
       startWith(0),
       switchMap(() => this.getWorkflowRuns(owner, repo))
     );
+  }
+
+  getWorkflowRunJobs(owner: string, repo: string, runId: number): Observable<{ jobs: WorkflowJob[] }> {
+    return this.http.get<{ jobs: WorkflowJob[] }>(
+      `${this.apiBase}/repos/${owner}/${repo}/actions/runs/${runId}/jobs?per_page=100`,
+      { headers: this.getHeaders() }
+    ).pipe(catchError(() => of({ jobs: [] })));
   }
 }
