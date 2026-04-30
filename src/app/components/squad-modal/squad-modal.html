@@ -1,0 +1,83 @@
+<div class="modal-overlay" (click)="onBackdropClick($event)">
+  <div class="modal-panel">
+    <div class="modal-header">
+      <span class="glitch-text" data-text="// COMMS FILTER //">// COMMS FILTER //</span>
+      <button type="button" class="close-btn" (click)="close()" aria-label="Close comms filter">✕</button>
+    </div>
+
+    <div class="modal-body">
+      <div class="section">
+        <div class="section-title">AUDIO LINK</div>
+        <button
+          type="button"
+          class="audio-toggle"
+          [class.on]="audioEnabled()"
+          (click)="toggleAudio()"
+          [attr.aria-pressed]="audioEnabled()">
+          <span class="dot"></span>
+          <span class="label">{{ audioEnabled() ? 'AUDIO ENABLED' : 'AUDIO MUTED' }}</span>
+        </button>
+        <small class="hint">Stored in localStorage as <code>audio_enabled</code>.</small>
+      </div>
+
+      <div class="section">
+        <div class="section-title">TRIGGER MODE</div>
+        <div class="mode-grid">
+          @for (m of modes; track m.id) {
+            <button
+              type="button"
+              class="mode-card"
+              [class.active]="soundMode() === m.id"
+              (click)="selectMode(m.id)"
+              [attr.aria-pressed]="soundMode() === m.id">
+              <div class="mode-label">{{ m.label }}</div>
+              <code class="mode-formula">{{ m.subtitle }}</code>
+              <div class="mode-vibe">{{ m.vibe }}</div>
+            </button>
+          }
+        </div>
+        <small class="hint">Stored in localStorage as <code>sound_mode</code>.</small>
+      </div>
+
+      <div class="section">
+        <div class="section-title">SQUAD LIST <span class="muted">// chooms ({{ squadMembers().length }})</span></div>
+        <div class="squad-input-row">
+          <input
+            type="text"
+            class="cyber-input"
+            placeholder="github-username"
+            [ngModel]="newMember()"
+            (ngModelChange)="newMember.set($event)"
+            (keydown)="onMemberInputKey($event)"
+            aria-label="Add squad member"
+          />
+          <button type="button" class="cyber-btn primary" (click)="addMember()">+ ADD</button>
+        </div>
+        @if (addError()) {
+          <div class="input-error">{{ addError() }}</div>
+        }
+        @if (squadMembers().length === 0) {
+          <div class="empty-squad">// NO CHOOMS REGISTERED //</div>
+        } @else {
+          <ul class="squad-list">
+            @for (member of squadMembers(); track member) {
+              <li class="squad-chip">
+                <span class="squad-name">{{ member }}</span>
+                <button
+                  type="button"
+                  class="squad-remove"
+                  (click)="removeMember(member)"
+                  [attr.aria-label]="'Remove ' + member + ' from squad'">✕</button>
+              </li>
+            }
+          </ul>
+        }
+        <small class="hint">Stored in localStorage as <code>squad_members</code> (JSON array). Add manually.</small>
+      </div>
+    </div>
+
+    <div class="modal-footer">
+      <button type="button" class="cyber-btn secondary" (click)="close()">CLOSE</button>
+    </div>
+  </div>
+</div>

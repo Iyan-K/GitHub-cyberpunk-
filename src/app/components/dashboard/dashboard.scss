@@ -185,6 +185,28 @@
       padding: 5px 12px;
       cursor: pointer;
       transition: all 0.2s;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+
+      .audio-mark {
+        color: #ff2d78;
+        text-shadow: 0 0 6px rgba(255, 45, 120, 0.6);
+
+        &.muted {
+          color: rgba(255, 255, 255, 0.3);
+          text-shadow: none;
+        }
+      }
+
+      .mode-tag {
+        font-size: 9px;
+        letter-spacing: 1px;
+        padding: 1px 5px;
+        border: 1px solid rgba(255, 45, 120, 0.4);
+        color: #ff2d78;
+        margin-left: 2px;
+      }
 
       &:hover {
         border-color: #00f5ff;

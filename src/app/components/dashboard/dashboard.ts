@@ -4,22 +4,30 @@ import { FormsModule } from '@angular/forms';
 import { Subscription } from 'rxjs';
 import { GithubService } from '../../services/github.service';
 import { AlertService } from '../../services/alert.service';
+import { SquadService } from '../../services/squad.service';
 import { PullRequest, WorkflowRun, GithubConfig } from '../../models/github.models';
 import { P5CanvasComponent } from '../p5-canvas/p5-canvas';
 import { PrCardComponent } from '../pr-card/pr-card';
 import { BuildCardComponent } from '../build-card/build-card';
 import { ConfigModalComponent } from '../config-modal/config-modal';
+import { BuildLogModalComponent } from '../build-log-modal/build-log-modal';
+import { SquadModalComponent } from '../squad-modal/squad-modal';
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, FormsModule, P5CanvasComponent, PrCardComponent, BuildCardComponent, ConfigModalComponent],
+  imports: [
+    CommonModule, FormsModule,
+    P5CanvasComponent, PrCardComponent, BuildCardComponent,
+    ConfigModalComponent, BuildLogModalComponent, SquadModalComponent
+  ],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.scss'
 })
 export class DashboardComponent implements OnInit, OnDestroy {
   private githubService = inject(GithubService);
   private alertService = inject(AlertService);
+  private squadService = inject(SquadService);
 
   static readonly FILTER_ME = '__me__';
   static readonly FILTER_ALL = '__all__';
@@ -29,12 +37,16 @@ export class DashboardComponent implements OnInit, OnDestroy {
   loading = signal(false);
   error = signal('');
   showConfig = signal(false);
+  showSquad = signal(false);
+  inspectedRun = signal<WorkflowRun | null>(null);
   lastUpdated = signal<Date | null>(null);
   config = signal<GithubConfig | null>(null);
   authenticatedUser = signal<string | null>(null);
   selectedAuthor = signal<string>(DashboardComponent.FILTER_ME);
 
   criticalAlert = this.alertService.criticalAlert;
+  soundMode = this.squadService.soundMode;
+  audioEnabled = this.squadService.audioEnabled;
 
   filteredPRs = computed(() => {
     const prs = this.pullRequests();
@@ -107,6 +119,9 @@ export class DashboardComponent implements OnInit, OnDestroy {
     this.lastUpdated.set(null);
     this.alertService.clearCriticalAlert();
     this.showConfig.set(false);
+    this.inspectedRun.set(null);
+    this.knownFailureIds.clear();
+    this.lastFailureState = false;
   }
 
   onConfigCancelled() {
@@ -119,12 +134,36 @@ export class DashboardComponent implements OnInit, OnDestroy {
     this.showConfig.set(true);
   }
 
+  openSquadSettings() {
+    this.showSquad.set(true);
+  }
+
+  closeSquadSettings() {
+    this.showSquad.set(false);
+  }
+
+  inspectBuild(run: WorkflowRun) {
+    this.inspectedRun.set(run);
+  }
+
+  closeInspect() {
+    this.inspectedRun.set(null);
+  }
+
   dismissAlert() {
     this.alertService.clearCriticalAlert();
   }
 
   onAuthorFilterChange(value: string) {
     this.selectedAuthor.set(value);
+  }
+
+  soundModeLabel(): string {
+    switch (this.soundMode()) {
+      case 'solo':  return 'SOLO';
+      case 'squad': return 'SQUAD';
+      case 'chaos': return 'CHAOS';
+    }
   }
 
   private fetchAuthenticatedUser() {
@@ -143,6 +182,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
   private startPolling(owner: string, repo: string) {
     this.subs.forEach(s => s.unsubscribe());
     this.subs = [];
+    this.knownFailureIds.clear();
+    this.lastFailureState = false;
     this.loading.set(true);
     this.error.set('');
 
@@ -175,15 +216,50 @@ export class DashboardComponent implements OnInit, OnDestroy {
   }
 
   private lastFailureState = false;
+  /**
+   * Tracks failure run-ids we've already evaluated, so the alarm only fires
+   * the first time a particular failure is observed (i.e. when a *new* failure
+   * arrives) rather than on every poll while it remains red.
+   */
+  private knownFailureIds = new Set<number>();
 
   private checkForFailures(runs: WorkflowRun[]) {
-    const hasFailure = runs.some(r => r.conclusion === 'failure');
-    if (hasFailure === this.lastFailureState) return;
-    this.lastFailureState = hasFailure;
-    if (hasFailure) {
+    const failures = runs.filter(r => r.conclusion === 'failure');
+    const hasFailure = failures.length > 0;
+
+    // Always keep the visual "critical" state in sync with whether the repo
+    // currently has any failed runs — regardless of who triggered them.
+    if (hasFailure !== this.lastFailureState) {
+      this.lastFailureState = hasFailure;
+      if (!hasFailure) {
+        this.alertService.clearCriticalAlert();
+        this.knownFailureIds.clear();
+        return;
+      }
+    }
+
+    if (!hasFailure) return;
+
+    // Determine if any *newly-observed* failure should trigger the audio alarm
+    // based on the user's Comms Filter mode.
+    const me = this.authenticatedUser();
+    let triggerAudio = false;
+    let visualOnly = false;
+    for (const run of failures) {
+      if (this.knownFailureIds.has(run.id)) continue;
+      this.knownFailureIds.add(run.id);
+      const actor = run.actor?.login || run.triggering_actor?.login || null;
+      if (this.squadService.shouldTriggerSound(actor, me)) {
+        triggerAudio = true;
+      } else {
+        visualOnly = true;
+      }
+    }
+
+    if (triggerAudio) {
       this.alertService.triggerCriticalAlert();
-    } else {
-      this.alertService.clearCriticalAlert();
+    } else if (visualOnly) {
+      this.alertService.showVisualAlert();
     }
   }
 
