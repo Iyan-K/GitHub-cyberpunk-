@@ -79,6 +79,11 @@
         <button class="start-btn" (click)="openConfig()">// INITIALIZE CONNECTION //</button>
       </div>
     } @else {
+      <app-overheat-gauge
+        [failedBuilds]="failedBuilds().length"
+        [openPRs]="openPRs().length"
+      ></app-overheat-gauge>
+
       <div class="panels-grid">
         <!-- Pull Requests Panel -->
         <div class="panel">

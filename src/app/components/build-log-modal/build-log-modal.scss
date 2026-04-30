@@ -260,6 +260,120 @@
   background: rgba(255, 45, 120, 0.04);
 }
 
+.fixer-brief {
+  margin-top: 12px;
+  padding-top: 10px;
+  border-top: 1px dashed rgba(0, 245, 255, 0.25);
+}
+
+.fixer-brief-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+
+  .fixer-tag {
+    color: #00f5ff;
+    font-size: 10px;
+    letter-spacing: 3px;
+    text-shadow: 0 0 6px rgba(0, 245, 255, 0.6);
+    flex: 1;
+  }
+
+  .fixer-status {
+    font-size: 10px;
+    letter-spacing: 2px;
+    color: #ffcc00;
+  }
+
+  .fixer-action {
+    background: transparent;
+    border: 1px solid rgba(0, 245, 255, 0.4);
+    color: #00f5ff;
+    font-family: inherit;
+    font-size: 10px;
+    letter-spacing: 2px;
+    padding: 4px 10px;
+    cursor: pointer;
+    transition: all 0.2s;
+
+    &.primary {
+      border-color: rgba(255, 45, 120, 0.6);
+      color: #ff2d78;
+      text-shadow: 0 0 6px rgba(255, 45, 120, 0.6);
+    }
+
+    &:hover:not(:disabled) {
+      background: rgba(0, 245, 255, 0.1);
+      box-shadow: 0 0 8px rgba(0, 245, 255, 0.4);
+    }
+
+    &.primary:hover:not(:disabled) {
+      background: rgba(255, 45, 120, 0.15);
+      box-shadow: 0 0 10px rgba(255, 45, 120, 0.5);
+    }
+
+    &:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+  }
+}
+
+.fixer-loading {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 11px;
+  color: #ffcc00;
+  letter-spacing: 1px;
+  padding: 6px 0;
+}
+
+.fixer-error {
+  font-size: 11px;
+  color: #ff2d78;
+  letter-spacing: 1px;
+  padding: 6px 8px;
+  border: 1px dashed rgba(255, 45, 120, 0.5);
+  background: rgba(255, 0, 50, 0.06);
+}
+
+.fixer-hint {
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.55);
+  line-height: 1.5;
+  padding: 6px 0;
+
+  strong {
+    color: #00f5ff;
+    letter-spacing: 1px;
+  }
+}
+
+.fixer-brief-body {
+  position: relative;
+  margin-top: 4px;
+  padding: 12px 14px;
+  border: 1px solid rgba(255, 45, 120, 0.4);
+  background:
+    linear-gradient(180deg, rgba(255, 45, 120, 0.05), rgba(0, 245, 255, 0.04));
+  color: #e0e0ff;
+  font-size: 12px;
+  line-height: 1.55;
+  letter-spacing: 0.3px;
+  white-space: pre-wrap;
+  word-break: break-word;
+  text-shadow: 0 0 4px rgba(0, 245, 255, 0.25);
+
+  &::before {
+    content: '> ';
+    color: #ff2d78;
+    text-shadow: 0 0 6px rgba(255, 45, 120, 0.7);
+    font-weight: bold;
+  }
+}
+
 .cyber-btn {
   background: transparent;
   border: 1px solid;

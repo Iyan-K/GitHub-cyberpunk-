@@ -53,6 +53,15 @@ export interface GithubConfig {
   token: string;
   owner: string;
   repo: string;
+  /**
+   * Optional LLM configuration used by the "Fixer's Brief" feature to
+   * generate cyberpunk-themed summaries of failed builds. When unset the
+   * Briefing modal shows a helpful "configure your LLM" message instead of
+   * making any network calls.
+   */
+  llmEndpoint?: string;
+  llmApiKey?: string;
+  llmModel?: string;
 }
 
 export type SoundMode = 'solo' | 'squad' | 'chaos';

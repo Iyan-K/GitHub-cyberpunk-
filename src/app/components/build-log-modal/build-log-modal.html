@@ -54,6 +54,43 @@
                 }
               </div>
             }
+
+            @if (isJobFailed(job)) {
+              <div class="fixer-brief">
+                <div class="fixer-brief-header">
+                  <span class="fixer-tag">// FIXER'S BRIEF //</span>
+                  @if (briefFor(job.id).loading) {
+                    <span class="fixer-status">JACKING IN...</span>
+                  } @else if (briefFor(job.id).brief) {
+                    <button type="button" class="fixer-action" (click)="clearBrief(job.id)">CLEAR</button>
+                    <button type="button" class="fixer-action" (click)="requestBrief(job)">RE-RUN</button>
+                  } @else {
+                    <button type="button" class="fixer-action primary"
+                            [disabled]="!llmConfigured()"
+                            [title]="llmConfigured() ? '' : 'Configure an LLM API key in CONFIG to enable.'"
+                            (click)="requestBrief(job)">
+                      CALL THE FIXER
+                    </button>
+                  }
+                </div>
+
+                @if (briefFor(job.id).loading) {
+                  <div class="fixer-loading">
+                    <span class="spinner">⟳</span>
+                    <span>FIXER IS PARSING THE FLATLINE...</span>
+                  </div>
+                } @else if (briefFor(job.id).error) {
+                  <div class="fixer-error">⚠ {{ briefFor(job.id).error }}</div>
+                } @else if (briefFor(job.id).brief) {
+                  <div class="fixer-brief-body">{{ briefFor(job.id).brief }}</div>
+                } @else if (!llmConfigured()) {
+                  <div class="fixer-hint">
+                    No LLM creds on file. Open <strong>CONFIG</strong> and slot in an API key
+                    to let the Fixer break down why this node flatlined.
+                  </div>
+                }
+              </div>
+            }
           </div>
         }
       }

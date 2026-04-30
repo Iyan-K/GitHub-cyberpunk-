@@ -1,0 +1,23 @@
+<div class="heat-sink" [class.overheat]="isOverheating()" role="meter"
+     [attr.aria-valuemin]="0" [attr.aria-valuemax]="100" [attr.aria-valuenow]="heat()"
+     aria-label="Deck overheat — repository health">
+  <div class="heat-sink-label">
+    <span class="label-tag">// SYSTEM HEAT //</span>
+    <span class="label-detail">{{ failingCount() }} FAIL / {{ openCount() }} OPEN</span>
+  </div>
+
+  <div class="heat-sink-track">
+    <div class="heat-sink-fins">
+      @for (fin of [0,1,2,3,4,5,6,7,8,9,10,11]; track fin) {
+        <span class="fin"></span>
+      }
+    </div>
+    <div class="heat-sink-fill" [style.width.%]="heat()"></div>
+    <div class="heat-sink-glow" [style.width.%]="heat()"></div>
+  </div>
+
+  <div class="heat-sink-readout">
+    <span class="status" [attr.data-status]="statusLabel()">{{ statusLabel() }}</span>
+    <span class="percent">{{ heat() }}%</span>
+  </div>
+</div>

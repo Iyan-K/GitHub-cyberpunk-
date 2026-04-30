@@ -33,6 +33,38 @@
           [(ngModel)]="repo"
         />
       </div>
+
+      <div class="field-divider">// FIXER'S BRIEF (LLM) — OPTIONAL //</div>
+
+      <div class="field-group">
+        <label class="field-label">LLM API KEY <span class="optional">(optional)</span></label>
+        <input
+          type="password"
+          class="cyber-input"
+          placeholder="sk-..."
+          [(ngModel)]="llmApiKey"
+        />
+        <small class="hint">Powers cyberpunk-themed error briefings on failed builds. Leave empty to disable.</small>
+      </div>
+      <div class="field-group">
+        <label class="field-label">LLM ENDPOINT <span class="optional">(optional)</span></label>
+        <input
+          type="text"
+          class="cyber-input"
+          placeholder="https://api.openai.com/v1/chat/completions"
+          [(ngModel)]="llmEndpoint"
+        />
+        <small class="hint">Any OpenAI-compatible chat completions URL. Defaults to OpenAI.</small>
+      </div>
+      <div class="field-group">
+        <label class="field-label">LLM MODEL <span class="optional">(optional)</span></label>
+        <input
+          type="text"
+          class="cyber-input"
+          placeholder="gpt-4o-mini"
+          [(ngModel)]="llmModel"
+        />
+      </div>
     </div>
     <div class="modal-footer">
       <button class="cyber-btn secondary" (click)="cancel()">CANCEL</button>

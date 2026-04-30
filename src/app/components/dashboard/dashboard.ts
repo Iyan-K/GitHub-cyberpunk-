@@ -12,6 +12,7 @@ import { BuildCardComponent } from '../build-card/build-card';
 import { ConfigModalComponent } from '../config-modal/config-modal';
 import { BuildLogModalComponent } from '../build-log-modal/build-log-modal';
 import { SquadModalComponent } from '../squad-modal/squad-modal';
+import { OverheatGaugeComponent } from '../overheat-gauge/overheat-gauge';
 
 @Component({
   selector: 'app-dashboard',
@@ -19,7 +20,8 @@ import { SquadModalComponent } from '../squad-modal/squad-modal';
   imports: [
     CommonModule, FormsModule,
     P5CanvasComponent, PrCardComponent, BuildCardComponent,
-    ConfigModalComponent, BuildLogModalComponent, SquadModalComponent
+    ConfigModalComponent, BuildLogModalComponent, SquadModalComponent,
+    OverheatGaugeComponent
   ],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.scss'
