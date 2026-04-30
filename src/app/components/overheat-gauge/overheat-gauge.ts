@@ -25,10 +25,10 @@ export class OverheatGaugeComponent {
   private _openPRs = signal(0);
 
   @Input() set failedBuilds(value: number) {
-    this._failedBuilds.set(Math.max(0, value | 0));
+    this._failedBuilds.set(Math.max(0, Math.floor(value) || 0));
   }
   @Input() set openPRs(value: number) {
-    this._openPRs.set(Math.max(0, value | 0));
+    this._openPRs.set(Math.max(0, Math.floor(value) || 0));
   }
 
   /** Heat percentage in the [0, 100] range. */
